@@ -284,11 +284,11 @@ dialog#lgl{border:0;border-radius:20px;padding:0;width:min(560px,92vw);max-heigh
 <script>
 /* ===== إعدادات يملؤها صاحب الصفحة ===== */
 var WA="213673939668";   // رقم واتساب بصيغة دولية بدون +
-var SHEET_URL="https://script.google.com/macros/s/AKfycbzNR9VjoDsoEdvt6erg0DQ1p9np2KMuqsWcPHM3xocvfG3xG0HvH8CCvbpKC6wxUOU6/exec";        // رابط Apps Script (Web app) لتسجيل الطلبات في Google Sheet
+var SHEET_URL="/api/order";   // دالة Vercel التي تسجّل الطلب في Google Sheet
 var PRICE=2900;          // سعر الحقيبة بالدينار
 /* ====================================== */
 var LANG="ar";
-var S={selw:["اختر الولاية","Choisir la wilaya","Select wilaya"],offopt:["اختر البلدية (مكتب DHD)","Choisir la commune (bureau DHD)","Select commune (DHD office)"],done:["تم تجهيز طلبك ✅ إن لم يفتح واتساب تلقائيًا ","Votre commande est prête ✅ Si WhatsApp ne s'ouvre pas automatiquement, ","Your order is ready ✅ If WhatsApp doesn't open automatically, "],link:["اضغط هنا لإرساله","cliquez ici pour l'envoyer","tap here to send it"],hint:["📞 يرجى إدخال رقم هاتف مرتبط بواتساب، سنتواصل معك عليه لتأكيد الطلب.","📞 Veuillez saisir un numéro lié à WhatsApp : nous vous contacterons dessus pour confirmer la commande.","📞 Please enter a WhatsApp-enabled number. We'll contact you on it to confirm your order."],phph:["05 XX XX XX XX","05 XX XX XX XX","05 XX XX XX XX"],bad:["رقم غير صالح. أدخل رقم هاتف جزائري صحيحًا (مثال: 0555 12 34 56).","Numéro invalide. Saisissez un numéro algérien valide (ex. 0555 12 34 56).","Invalid number. Enter a valid Algerian mobile number (e.g. 0555 12 34 56)."],saved:["تم تسجيل طلبك ✅ رقم الطلب: ","Votre commande est enregistrée ✅ N° : ","Your order is saved ✅ ID: "],wabtn:["أكّد طلبك عبر واتساب","Confirmer via WhatsApp","Confirm on WhatsApp"],fail:["تعذّر تسجيل الطلب، أكّده مباشرة عبر واتساب. رقم الطلب: ","Enregistrement impossible, confirmez directement via WhatsApp. N° : ","Could not save the order, confirm it directly on WhatsApp. ID: "],oid:["رقم الطلب: ","N° de commande : ","Order ID: "]};
+var S={selw:["اختر الولاية","Choisir la wilaya","Select wilaya"],offopt:["اختر البلدية (مكتب DHD)","Choisir la commune (bureau DHD)","Select commune (DHD office)"],done:["تم تجهيز طلبك ✅ إن لم يفتح واتساب تلقائيًا ","Votre commande est prête ✅ Si WhatsApp ne s'ouvre pas automatiquement, ","Your order is ready ✅ If WhatsApp doesn't open automatically, "],link:["اضغط هنا لإرساله","cliquez ici pour l'envoyer","tap here to send it"],hint:["📞 يرجى إدخال رقم هاتف مرتبط بواتساب، سنتواصل معك عليه لتأكيد الطلب.","📞 Veuillez saisir un numéro lié à WhatsApp : nous vous contacterons dessus pour confirmer la commande.","📞 Please enter a WhatsApp-enabled number. We'll contact you on it to confirm your order."],phph:["05 XX XX XX XX","05 XX XX XX XX","05 XX XX XX XX"],bad:["رقم غير صالح. أدخل رقم هاتف جزائري صحيحًا (مثال: 0555 12 34 56).","Numéro invalide. Saisissez un numéro algérien valide (ex. 0555 12 34 56).","Invalid number. Enter a valid Algerian mobile number (e.g. 0555 12 34 56)."],blocked:["تم إيقاف الطلبات من هذا الرقم/الاسم/الجهاز مؤقتًا لمدة 6 ساعات بسبب كثرة المحاولات. إذا كان هذا خطأً، تواصل معنا مباشرة عبر واتساب أو فيسبوك.","Les commandes depuis ce numéro/nom/appareil sont suspendues pendant 6 heures (trop de tentatives). S'il s'agit d'une erreur, contactez-nous directement sur WhatsApp ou Facebook.","Orders from this number/name/device are paused for 6 hours due to too many attempts. If this is a mistake, please contact us directly on WhatsApp or Facebook."],saved:["تم تسجيل طلبك ✅ رقم الطلب: ","Votre commande est enregistrée ✅ N° : ","Your order is saved ✅ ID: "],wabtn:["أكّد طلبك عبر واتساب","Confirmer via WhatsApp","Confirm on WhatsApp"],fail:["تعذّر تسجيل الطلب، أكّده مباشرة عبر واتساب. رقم الطلب: ","Enregistrement impossible, confirmez directement via WhatsApp. N° : ","Could not save the order, confirm it directly on WhatsApp. ID: "],oid:["رقم الطلب: ","N° de commande : ","Order ID: "]};
 var LI={ar:0,fr:1,en:2};
 function t(k){return S[k][LI[LANG]];}
 var fmt=function(n){return n+" "+(LANG==="ar"?"دج":"DA");};
@@ -338,8 +338,13 @@ var rec={id:id,name:g("n"),phone:g("p"),wilaya:(A.value?W[A.value][1]:""),commun
 function waBtn(txt){box.textContent=txt;var l=document.createElement("a");l.href=url;l.target="_blank";l.rel="noopener";l.className="btn";l.style.marginTop="12px";l.textContent="💬 "+t("wabtn");box.appendChild(document.createElement("br"));box.appendChild(l);}
 if(SHEET_URL){
 sb.disabled=true;
-fetch(SHEET_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(rec)})
-.then(function(){waBtn(t("saved")+id);})
+fetch(SHEET_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(rec)})
+.then(function(r){return r.json();})
+.then(function(j){
+if(j&&j.ok){waBtn(t("saved")+id);}
+else if(j&&j.reason==="blocked"){sb.disabled=false;box.textContent=t("blocked");}
+else{sb.disabled=false;waBtn(t("fail")+id);}
+})
 .catch(function(){sb.disabled=false;waBtn(t("fail")+id);});
 }else{
 box.textContent=t("oid")+id+" — "+t("done");
