@@ -25,9 +25,13 @@ module.exports = async (req, res) => {
       method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: JSON.stringify(body), redirect: "follow"
     });
-    const j = await r.json();
+    const txt = await r.text();
+    let j;
+    try { j = JSON.parse(txt); } catch (e) {
+      return res.status(502).json({ ok: false, reason: "upstream", status: r.status, snippet: txt.slice(0, 160).replace(/\s+/g, " ") });
+    }
     return res.status(200).json(j);
   } catch (e) {
-    return res.status(502).json({ ok: false, reason: "upstream" });
+    return res.status(502).json({ ok: false, reason: "upstream", error: String(e && e.message || e).slice(0, 120) });
   }
 };
