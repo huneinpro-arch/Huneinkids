@@ -138,6 +138,20 @@ footer img{width:54px;height:54px;border-radius:50%;margin-bottom:8px}
 dialog#lgl{border:0;border-radius:20px;padding:0;width:min(560px,92vw);max-height:84vh;color:var(--ink);box-shadow:0 30px 80px rgba(0,0,0,.4)}dialog#lgl::backdrop{background:rgba(10,20,40,.6)}
 .lh{position:sticky;top:0;background:#fff;display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--line);font-size:18px}.lh button{border:0;background:#eef2ff;border-radius:50%;width:34px;height:34px;font-size:15px;cursor:pointer}
 #lb{padding:6px 22px 22px;line-height:1.8;font-size:15px}#lb ul{padding-inline-start:20px;margin:12px 0}#lb li{margin-bottom:8px}
+#thx{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:18px;background:linear-gradient(135deg,#2b4cff 0%,#4f7bff 55%,#a9e4c8 130%);overflow:auto}
+#thx.on{display:flex}#cf{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.tcard{position:relative;background:#fff;border-radius:28px;max-width:460px;width:100%;padding:34px 24px 26px;text-align:center;box-shadow:0 30px 80px rgba(10,20,60,.35);animation:pop .5s cubic-bezier(.2,1.3,.4,1)}
+@keyframes pop{from{transform:scale(.85) translateY(20px);opacity:0}to{transform:none;opacity:1}}
+.tick{width:92px;height:92px;margin:-78px auto 14px;border-radius:50%;background:#25c26e;box-shadow:0 12px 30px rgba(37,194,110,.5);display:grid;place-items:center;border:6px solid #fff}
+.tick svg{width:46px;height:46px}.tick path{fill:none;stroke:#fff;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:60;stroke-dashoffset:60;animation:dr .6s .35s ease forwards}
+@keyframes dr{to{stroke-dashoffset:0}}
+.tcard h2{margin:6px 0 8px;font-size:30px}.tcard p{color:var(--mute);margin:0 0 14px;line-height:1.8}
+.oid{display:inline-block;background:var(--sun2);color:#6b4b00;font-weight:800;border-radius:999px;padding:8px 18px;letter-spacing:.5px;margin-bottom:14px;direction:ltr}
+.tl{list-style:none;padding:0;margin:0 0 18px;background:#f5f8ff;border-radius:16px;padding:10px 16px;text-align:start}
+.tl li{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px dashed var(--line);font-weight:600}.tl li:last-child{border:0;color:var(--blue);font-size:17px}
+.tcard .opt{font-size:13px;color:var(--mute);margin:6px 0 4px}
+#tw{display:flex;justify-content:center;align-items:center;gap:8px;background:#25D366;color:#fff;box-shadow:0 8px 20px rgba(37,211,102,.35);width:100%}
+#th{margin-top:10px;width:100%;background:#eef2ff;color:var(--blue);box-shadow:none}
 </style>
 </head>
 <body>
@@ -281,6 +295,12 @@ dialog#lgl{border:0;border-radius:20px;padding:0;width:min(560px,92vw);max-heigh
 </div></footer>
 <a href="#order" class="btn sticky" id="stk" data-i="1">اطلب الآن</a>
 
+<div id="thx" role="dialog" aria-modal="true"><canvas id="cf"></canvas><div class="tcard">
+<div class="tick"><svg viewBox="0 0 48 48"><path d="M10 25l9 9 19-20"/></svg></div>
+<h2 id="tt"></h2><p id="ts"></p><div class="oid" id="to"></div><ul class="tl" id="tl"></ul>
+<div class="opt" id="tp"></div>
+<a id="tw" class="btn" target="_blank" rel="noopener"><svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm5.2 14.2c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.2-4.5-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.8s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.3 0 .5l-.3.5-.4.4c-.1.2-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.4.1.6-.1l.8-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.6.3.1.2.1.8-.1 1.4z"/></svg><span id="twt"></span></a>
+<button type="button" class="btn" id="th"></button></div></div>
 <script>
 /* ===== إعدادات يملؤها صاحب الصفحة ===== */
 var WA="213673939668";   // رقم واتساب بصيغة دولية بدون +
@@ -288,7 +308,7 @@ var SHEET_URL="/api/order";   // دالة Vercel التي تسجّل الطلب 
 var PRICE=2900;          // سعر الحقيبة بالدينار
 /* ====================================== */
 var LANG="ar";
-var S={selw:["اختر الولاية","Choisir la wilaya","Select wilaya"],offopt:["اختر البلدية (مكتب DHD)","Choisir la commune (bureau DHD)","Select commune (DHD office)"],done:["تم تجهيز طلبك ✅ إن لم يفتح واتساب تلقائيًا ","Votre commande est prête ✅ Si WhatsApp ne s'ouvre pas automatiquement, ","Your order is ready ✅ If WhatsApp doesn't open automatically, "],link:["اضغط هنا لإرساله","cliquez ici pour l'envoyer","tap here to send it"],hint:["📞 يرجى إدخال رقم هاتف مرتبط بواتساب، سنتواصل معك عليه لتأكيد الطلب.","📞 Veuillez saisir un numéro lié à WhatsApp : nous vous contacterons dessus pour confirmer la commande.","📞 Please enter a WhatsApp-enabled number. We'll contact you on it to confirm your order."],phph:["05 XX XX XX XX","05 XX XX XX XX","05 XX XX XX XX"],bad:["رقم غير صالح. أدخل رقم هاتف جزائري صحيحًا (مثال: 0555 12 34 56).","Numéro invalide. Saisissez un numéro algérien valide (ex. 0555 12 34 56).","Invalid number. Enter a valid Algerian mobile number (e.g. 0555 12 34 56)."],blocked:["تم إيقاف الطلبات من هذا الرقم/الاسم/الجهاز مؤقتًا لمدة 6 ساعات بسبب كثرة المحاولات. إذا كان هذا خطأً، تواصل معنا مباشرة عبر واتساب أو فيسبوك.","Les commandes depuis ce numéro/nom/appareil sont suspendues pendant 6 heures (trop de tentatives). S'il s'agit d'une erreur, contactez-nous directement sur WhatsApp ou Facebook.","Orders from this number/name/device are paused for 6 hours due to too many attempts. If this is a mistake, please contact us directly on WhatsApp or Facebook."],saved:["تم تسجيل طلبك ✅ رقم الطلب: ","Votre commande est enregistrée ✅ N° : ","Your order is saved ✅ ID: "],wabtn:["تأكيد الطلب عبر واتساب (اختياري)","Confirmer via WhatsApp (facultatif)","Confirm on WhatsApp (optional)"],fail:["تعذّر تسجيل الطلب، أكّده مباشرة عبر واتساب. رقم الطلب: ","Enregistrement impossible, confirmez directement via WhatsApp. N° : ","Could not save the order, confirm it directly on WhatsApp. ID: "],oid:["رقم الطلب: ","N° de commande : ","Order ID: "]};
+var S={selw:["اختر الولاية","Choisir la wilaya","Select wilaya"],offopt:["اختر البلدية (مكتب DHD)","Choisir la commune (bureau DHD)","Select commune (DHD office)"],done:["تم تجهيز طلبك ✅ إن لم يفتح واتساب تلقائيًا ","Votre commande est prête ✅ Si WhatsApp ne s'ouvre pas automatiquement, ","Your order is ready ✅ If WhatsApp doesn't open automatically, "],link:["اضغط هنا لإرساله","cliquez ici pour l'envoyer","tap here to send it"],hint:["📞 يرجى إدخال رقم هاتف مرتبط بواتساب، سنتواصل معك عليه لتأكيد الطلب.","📞 Veuillez saisir un numéro lié à WhatsApp : nous vous contacterons dessus pour confirmer la commande.","📞 Please enter a WhatsApp-enabled number. We'll contact you on it to confirm your order."],phph:["05 XX XX XX XX","05 XX XX XX XX","05 XX XX XX XX"],bad:["رقم غير صالح. أدخل رقم هاتف جزائري صحيحًا (مثال: 0555 12 34 56).","Numéro invalide. Saisissez un numéro algérien valide (ex. 0555 12 34 56).","Invalid number. Enter a valid Algerian mobile number (e.g. 0555 12 34 56)."],blocked:["تم إيقاف الطلبات من هذا الرقم/الاسم/الجهاز مؤقتًا لمدة 6 ساعات بسبب كثرة المحاولات. إذا كان هذا خطأً، تواصل معنا مباشرة عبر واتساب أو فيسبوك.","Les commandes depuis ce numéro/nom/appareil sont suspendues pendant 6 heures (trop de tentatives). S'il s'agit d'une erreur, contactez-nous directement sur WhatsApp ou Facebook.","Orders from this number/name/device are paused for 6 hours due to too many attempts. If this is a mistake, please contact us directly on WhatsApp or Facebook."],thx:{t:["شكرًا لك! 🎉","Merci beaucoup ! 🎉","Thank you! 🎉"],s:["تم تسجيل طلبك بنجاح. سنتواصل معك قريبًا لتأكيد الطلب وترتيب التوصيل.","Votre commande a bien été enregistrée. Nous vous contacterons bientôt pour confirmer et organiser la livraison.","Your order has been received. We'll contact you soon to confirm it and arrange delivery."],q:["الكمية","Quantité","Quantity"],d:["التوصيل","Livraison","Delivery"],tot:["المجموع","Total","Total"],home:["للمنزل","À domicile","Home"],off:["لمكتب التوصيل","Au bureau","To office"],p:["اختياري: يمكنك تأكيد طلبك مباشرة عبر واتساب","Facultatif : confirmez directement via WhatsApp","Optional: confirm your order directly on WhatsApp"],w:["تأكيد الطلب عبر واتساب","Confirmer via WhatsApp","Confirm on WhatsApp"],b:["العودة للصفحة الرئيسية","Retour à l'accueil","Back to home"]},saved:["تم تسجيل طلبك ✅ رقم الطلب: ","Votre commande est enregistrée ✅ N° : ","Your order is saved ✅ ID: "],wabtn:["تأكيد الطلب عبر واتساب (اختياري)","Confirmer via WhatsApp (facultatif)","Confirm on WhatsApp (optional)"],fail:["تعذّر تسجيل الطلب، أكّده مباشرة عبر واتساب. رقم الطلب: ","Enregistrement impossible, confirmez directement via WhatsApp. N° : ","Could not save the order, confirm it directly on WhatsApp. ID: "],oid:["رقم الطلب: ","N° de commande : ","Order ID: "]};
 var LI={ar:0,fr:1,en:2};
 function t(k){return S[k][LI[LANG]];}
 var fmt=function(n){return n+" "+(LANG==="ar"?"دج":"DA");};
@@ -343,7 +363,7 @@ sb.disabled=true;
 fetch(SHEET_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(rec)})
 .then(function(r){return r.json();})
 .then(function(j){
-if(j&&j.ok){waBtn(t("saved")+id,urlC);}
+if(j&&j.ok){waBtn(t("saved")+id,urlC);showThanks(rec,urlC,id);}
 else if(j&&j.reason==="blocked"){sb.disabled=false;box.textContent=t("blocked");}
 else{sb.disabled=false;waBtn(t("fail")+id);}
 })
@@ -367,11 +387,26 @@ function fillLg(){if(!LGK)return;document.getElementById("lt").textContent=LG[LG
 document.querySelectorAll(".legal button").forEach(function(b){b.addEventListener("click",function(){LGK=b.dataset.g;fillLg();var d=document.getElementById("lgl");try{d.showModal();}catch(x){d.setAttribute("open","");}});});
 document.getElementById("lx").addEventListener("click",function(){document.getElementById("lgl").close();});
 document.getElementById("lgl").addEventListener("click",function(e){if(e.target===this)this.close();});
+
+var TH=null;
+function renderThanks(){if(!TH)return;var x=S.thx,i=LI[LANG],r=TH.rec;
+document.getElementById("tt").textContent=x.t[i];document.getElementById("ts").textContent=x.s[i];
+document.getElementById("to").textContent="#"+TH.id;
+var dt=r.delivery==="للمنزل"?x.home[i]:x.off[i];
+document.getElementById("tl").innerHTML="<li><span>"+x.q[i]+"</span><span>"+r.qty+"</span></li><li><span>"+x.d[i]+"</span><span>"+dt+" — "+r.wilaya+", "+r.commune+"</span></li><li><span>"+x.tot[i]+"</span><span>"+fmt(r.total)+"</span></li>";
+document.getElementById("tp").textContent=x.p[i];document.getElementById("twt").textContent=x.w[i];document.getElementById("tw").href=TH.urlC;document.getElementById("th").textContent=x.b[i];}
+function confetti(){var c=document.getElementById("cf"),g=c.getContext("2d");c.width=c.offsetWidth;c.height=c.offsetHeight;var cols=["#ffc21a","#2b4cff","#25c26e","#ff5c8a","#ffffff"],P=[];
+for(var k=0;k<110;k++)P.push({x:Math.random()*c.width,y:-20-Math.random()*c.height*.6,w:6+Math.random()*6,h:8+Math.random()*8,v:2+Math.random()*3.5,a:Math.random()*6,r:(Math.random()-.5)*.25,c:cols[k%5]});
+var t0=Date.now();(function f(){g.clearRect(0,0,c.width,c.height);P.forEach(function(p){p.y+=p.v;p.a+=p.r;p.x+=Math.sin(p.a)*1.2;g.save();g.translate(p.x,p.y);g.rotate(p.a);g.fillStyle=p.c;g.fillRect(-p.w/2,-p.h/2,p.w,p.h);g.restore();});
+if(Date.now()-t0<4500)requestAnimationFrame(f);else g.clearRect(0,0,c.width,c.height);})();}
+function showThanks(rec,urlC,id){TH={rec:rec,urlC:urlC,id:id};renderThanks();document.getElementById("thx").classList.add("on");document.body.style.overflow="hidden";try{confetti();}catch(x){}}
+document.getElementById("th").addEventListener("click",function(){document.getElementById("thx").classList.remove("on");document.body.style.overflow="";TH=null;
+var f=document.getElementById("f");f.reset();document.getElementById("msg").textContent="";var sb=f.querySelector("button[type=submit]");sb.disabled=false;calc();window.scrollTo(0,0);});
 var TT={ar:"حقيبة عقيدة الطفل المسلم",fr:"Pack Aqida de l'enfant musulman",en:"The Young Muslim's Aqeedah Kit"};
 function setLang(l){LANG=l;var h=document.documentElement;h.lang=l;h.dir=l==="ar"?"rtl":"ltr";document.title=TT[l]+" – Hunein";
 document.querySelectorAll("[data-i]").forEach(function(e){if(e.dataset.ar===undefined)e.dataset.ar=e.innerHTML;e.innerHTML=l==="ar"?e.dataset.ar:I[+e.dataset.i][LI[l]-1];});
 document.querySelectorAll("#lg button").forEach(function(b){b.classList.toggle("on",b.dataset.l===l);});
-document.querySelectorAll(".legal button").forEach(function(b){b.textContent=LG[b.dataset.g].t[LI[LANG]];});fillLg();document.getElementById("phh").textContent=t("hint");PI.placeholder=t("phph");chkP();buildA();setPrices();calc();try{localStorage.setItem("hl",l);}catch(x){}}
+document.querySelectorAll(".legal button").forEach(function(b){b.textContent=LG[b.dataset.g].t[LI[LANG]];});fillLg();document.getElementById("phh").textContent=t("hint");PI.placeholder=t("phph");chkP();renderThanks();buildA();setPrices();calc();try{localStorage.setItem("hl",l);}catch(x){}}
 document.querySelectorAll("#lg button").forEach(function(b){b.addEventListener("click",function(){setLang(b.dataset.l);});});
 var sl="ar";try{sl=localStorage.getItem("hl")||"ar";}catch(x){}
 setLang(LI[sl]===undefined?"ar":sl);
