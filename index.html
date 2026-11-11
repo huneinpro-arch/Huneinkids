@@ -332,18 +332,18 @@ var n=+q.value;
 var id=oid();
 var m="طلب جديد: حقيبة عقيدة الطفل المسلم\nرقم الطلب: "+id+"\nالاسم: "+g("n")+"\nالهاتف: "+g("p")+"\nالولاية: "+(A.value?W[A.value][1]:"")+"\nالبلدية: "+cval()+"\nالتوصيل: "+d+"\nالكمية: "+n+"\nسعر الحقيبة: "+fa(PRICE*n)+"\nشركة التوصيل: DHD\nسعر التوصيل: "+fa(ship())+"\nالمجموع: "+fa(PRICE*n+ship());
 var url="https://wa.me/"+WA+"?text="+encodeURIComponent(m);
-var mc="السلام عليكم 👋\nلقد أرسلت طلبي عبر الموقع وأريد تأكيده.\nرقم الطلب: "+id+"\nالاسم: "+g("n")+"\nالهاتف: "+g("p")+"\nالمجموع: "+fa(PRICE*n+ship());
+var rec={id:id,name:g("n"),phone:g("p"),wilaya:(A.value?W[A.value][1]:""),commune:cval(),delivery:d,qty:n,price:PRICE*n,ship:ship(),total:PRICE*n+ship(),lang:LANG};
+var mc="السلام عليكم 👋\nأؤكد طلبي رقم: "+id+"\nالطلبية: حقيبة عقيدة الطفل المسلم × "+n+"\nالاسم: "+g("n")+"\nالهاتف: "+g("p")+"\nالولاية: "+rec.wilaya+" — "+cval()+"\nالتوصيل: "+d+"\nالمجموع: "+fa(PRICE*n+ship());
 var urlC="https://wa.me/"+WA+"?text="+encodeURIComponent(mc);
 var box=document.getElementById("msg");
 var sb=e.target.querySelector('button[type=submit]');
-var rec={id:id,name:g("n"),phone:g("p"),wilaya:(A.value?W[A.value][1]:""),commune:cval(),delivery:d,qty:n,price:PRICE*n,ship:ship(),total:PRICE*n+ship(),lang:LANG};
 function waBtn(txt,u){box.textContent=txt;var l=document.createElement("a");l.href=u||url;l.target="_blank";l.rel="noopener";l.className="btn";l.style.marginTop="12px";l.textContent="💬 "+t("wabtn");box.appendChild(document.createElement("br"));box.appendChild(l);}
 if(SHEET_URL){
 sb.disabled=true;
 fetch(SHEET_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(rec)})
 .then(function(r){return r.json();})
 .then(function(j){
-if(j&&j.ok){waBtn(t("saved")+id,urlC);}
+if(j&&j.ok){waBtn(t("saved")+id,urlC);setTimeout(function(){location.href=urlC;},1200);}
 else if(j&&j.reason==="blocked"){sb.disabled=false;box.textContent=t("blocked");}
 else{sb.disabled=false;waBtn(t("fail")+id);}
 })
