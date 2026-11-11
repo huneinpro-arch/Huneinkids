@@ -153,6 +153,11 @@ dialog#lgl{border:0;border-radius:20px;padding:0;width:min(560px,92vw);max-heigh
 #tw{display:flex;justify-content:center;align-items:center;gap:8px;background:#25D366;color:#fff;box-shadow:0 8px 20px rgba(37,211,102,.35);width:100%}
 #th{margin-top:10px;width:100%;background:#eef2ff;color:var(--blue);box-shadow:none}
 </style>
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init','1473274858152641');fbq('track','PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1473274858152641&ev=PageView&noscript=1"/></noscript>
 </head>
 <body>
 
@@ -363,7 +368,7 @@ sb.disabled=true;
 fetch(SHEET_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(rec)})
 .then(function(r){return r.json();})
 .then(function(j){
-if(j&&j.ok){waBtn(t("saved")+id,urlC);showThanks(rec,urlC,id);}
+if(j&&j.ok){try{fbq("track","Purchase",{value:rec.total,currency:"DZD",content_name:"حقيبة عقيدة الطفل المسلم",num_items:rec.qty},{eventID:id});}catch(x){}waBtn(t("saved")+id,urlC);showThanks(rec,urlC,id);}
 else if(j&&j.reason==="blocked"){sb.disabled=false;box.textContent=t("blocked");}
 else{sb.disabled=false;waBtn(t("fail")+id);}
 })
@@ -411,5 +416,6 @@ document.querySelectorAll("#lg button").forEach(function(b){b.addEventListener("
 var sl="ar";try{sl=localStorage.getItem("hl")||"ar";}catch(x){}
 setLang(LI[sl]===undefined?"ar":sl);
 </script>
+<script>try{document.getElementById("f").addEventListener("focusin",function(){try{fbq("track","InitiateCheckout")}catch(x){}},{once:true});}catch(x){}</script>
 </body>
 </html>
